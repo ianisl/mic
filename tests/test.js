@@ -1,16 +1,22 @@
 var mic = require('../index.js');
 var fs = require('fs');
 
-var micInstance = mic({ 'rate': '16000', 'channels': '1', 'debug': false, 'exitOnSilence': 6 });
+var micInstance = mic({
+    rate: '44100',
+    channels: '1',
+    debug: true
+    // TODO add option to provide path to sox
+});
+
+// Test: record 5 seconds of audio
+// Play resulting raw file with sox, eg:
+// $ play -b 16 -r 44100 -e signed output.raw
+
 var micInputStream = micInstance.getAudioStream();
+micInputStream.pipe(fs.WriteStream('output.raw'));
 
-var outputFileStream = fs.WriteStream('output.raw');
-
-micInputStream.pipe(outputFileStream);
-
-var chunkCounter = 0;
 micInputStream.on('data', function(data) {
-        console.log("Recieved Input Stream of Size %d: %d", data.length, chunkCounter++);
+    console.log("Recieved Input Stream: " + data.length);
 });
 
 micInputStream.on('error', function(err) {
@@ -18,38 +24,19 @@ micInputStream.on('error', function(err) {
 });
 
 micInputStream.on('startComplete', function() {
-        console.log("Got SIGNAL startComplete");
-        setTimeout(function() {
-                micInstance.pause();
-            }, 5000);
-    });
-    
+    // 'startComplete': This is emitted once the start() function is successfully executed
+    console.log("Got SIGNAL startComplete");
+    setTimeout(function() {
+            micInstance.stop();
+    }, 5000);
+});
+
 micInputStream.on('stopComplete', function() {
-        console.log("Got SIGNAL stopComplete");
-    });
-    
-micInputStream.on('pauseComplete', function() {
-        console.log("Got SIGNAL pauseComplete");
-        setTimeout(function() {
-                micInstance.resume();
-            }, 5000);
-    });
-
-micInputStream.on('resumeComplete', function() {
-        console.log("Got SIGNAL resumeComplete");
-        setTimeout(function() {
-                micInstance.stop();
-            }, 5000);
-    });
-
-micInputStream.on('silence', function() {
-        console.log("Got SIGNAL silence");
-    });
+    console.log("Got SIGNAL stopComplete");
+});
 
 micInputStream.on('processExitComplete', function() {
-        console.log("Got SIGNAL processExitComplete");
-    });
+    console.log("Got SIGNAL processExitComplete");
+});
 
 micInstance.start();
-
-
