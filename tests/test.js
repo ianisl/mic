@@ -1,23 +1,19 @@
-var mic = require('../index.js');
-var fs = require('fs');
+const createMicInstance = require('../index.js');
+const fs = require('fs');
 
-var micInstance = mic({
-    rate: '44100',
-    channels: '1',
-    debug: true,
-    sox: '/usr/local/bin/sox'
-    // TODO add option to provide path to sox
-});
-
-// Test: record 5 seconds of audio
+// Test: record 5 seconds of audio.
 // Play resulting raw file with sox, eg:
 // $ play -b 16 -r 44100 -e signed output.raw
 
-var micInputStream = micInstance.getAudioStream();
-micInputStream.pipe(fs.WriteStream('output.raw'));
+const micInstance = createMicInstance({
+    debug: false,
+    sox: '/usr/local/bin/sox' // Adapt
+});
 
-micInputStream.on('startComplete', function() {
-    // Stop after 5 seconds
+const micInputStream = micInstance.getAudioStream();
+micInputStream.pipe(fs.WriteStream('output.wav'));
+
+micInputStream.on('start', function() {
     setTimeout(function() {
         micInstance.stop();
     }, 5000);
@@ -29,10 +25,11 @@ micInputStream.on('data', function(data) {
 micInputStream.on('error', function(err) {
 });
 
-micInputStream.on('stopComplete', function() {
+micInputStream.on('stop', function() {
 });
 
-micInputStream.on('processExitComplete', function() {
+micInputStream.on('exit', function(code) {
+    console.log('---- emitted exit with code = %d', code);
 });
 
 micInstance.start();

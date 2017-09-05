@@ -1,6 +1,8 @@
 # mic
 
-A slightly modified version of the [mic](https://github.com/ashishbajaj99/mic) library by Ashish Bajaj.
+Enables cross-platform recording of audio trough SoX. Modified from the [mic](https://github.com/ashishbajaj99/mic) library by Ashish Bajaj. Tested on macOS 10.11, Windows 10, Ubuntu 16.04.
+
+NB: Support for options was dropped due to the macOS SoX executable not taking them into account.
 
 License
 ==========
