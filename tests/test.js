@@ -7,29 +7,20 @@ const fs = require('fs');
 
 const micInstance = createMicInstance({
     debug: false,
-    sox: '/usr/local/bin/sox' // Adapt
+    sox: '/usr/local/bin/sox' // Adapt to your config
 });
 
 const micInputStream = micInstance.getAudioStream();
 micInputStream.pipe(fs.WriteStream('output.wav'));
 
-micInputStream.on('start', function() {
-    setTimeout(function() {
-        micInstance.stop();
-    }, 5000);
+micInputStream.on('start', () => {
+    setTimeout(() => micInstance.stop(), 5000);
 });
 
-micInputStream.on('data', function(data) {
-});
-
-micInputStream.on('error', function(err) {
-});
-
-micInputStream.on('stop', function() {
-});
-
-micInputStream.on('exit', function(code) {
-    console.log('---- emitted exit with code = %d', code);
-});
+micInputStream.on('exit', code => console.log('---- emitted exit with code = %d', code));
+// Other handlers:
+// micInputStream.on('data', data => {});
+// micInputStream.on('error', err => {});
+// micInputStream.on('stop', () => {});
 
 micInstance.start();
