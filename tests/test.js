@@ -4,7 +4,8 @@ var fs = require('fs');
 var micInstance = mic({
     rate: '44100',
     channels: '1',
-    debug: true
+    debug: true,
+    sox: '/usr/local/bin/sox'
     // TODO add option to provide path to sox
 });
 
@@ -15,28 +16,23 @@ var micInstance = mic({
 var micInputStream = micInstance.getAudioStream();
 micInputStream.pipe(fs.WriteStream('output.raw'));
 
-micInputStream.on('data', function(data) {
-    console.log("Recieved Input Stream: " + data.length);
-});
-
-micInputStream.on('error', function(err) {
-    cosole.log("Error in Input Stream: " + err);
-});
-
 micInputStream.on('startComplete', function() {
-    // 'startComplete': This is emitted once the start() function is successfully executed
-    console.log("Got SIGNAL startComplete");
+    // Stop after 5 seconds
     setTimeout(function() {
-            micInstance.stop();
+        micInstance.stop();
     }, 5000);
 });
 
+micInputStream.on('data', function(data) {
+});
+
+micInputStream.on('error', function(err) {
+});
+
 micInputStream.on('stopComplete', function() {
-    console.log("Got SIGNAL stopComplete");
 });
 
 micInputStream.on('processExitComplete', function() {
-    console.log("Got SIGNAL processExitComplete");
 });
 
 micInstance.start();
