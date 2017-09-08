@@ -6,7 +6,7 @@ const fs = require('fs');
 // $ play -b 16 -r 44100 -e signed output.raw
 
 const micInstance = createMicInstance({
-    debug: false,
+    debug: true,
     sox: '/usr/local/bin/sox' // Adapt to your config
 });
 
