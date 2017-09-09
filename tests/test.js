@@ -14,6 +14,7 @@ const micInputStream = micInstance.getAudioStream();
 micInputStream.pipe(fs.WriteStream('output.wav'));
 
 micInputStream.on('start', () => {
+    console.log('---- emitted start event');
     setTimeout(() => micInstance.stop(), 5000);
 });
 
